@@ -55,29 +55,13 @@ class SearchViewController: UIViewController{
     override func viewDidLoad() {
         
         super.viewDidLoad()
-        locationManager.delegate = self
-        locationManager.distanceFilter = 500
-        locationManager.desiredAccuracy = kCLLocationAccuracyKilometer
-        if let sharing = UserDefaults.standard.value(forKey: "sharingLocation") as? Bool {
-            hasAuthorized = sharing
-            if sharing {
-                if !hasStartedUpdatingLocation {
-                    locationManager.startUpdatingLocation()
-                    hasStartedUpdatingLocation = true
-                }
-            } else {
-                getLastSearchCity()
-            }
-        } else {
-          
-            locationManager.requestAlwaysAuthorization()
-        }
+        prepareLocation()
     }
     
-    func initializeUI() {
+    private func initializeUI() {
         
         
-        view.backgroundColor = .white
+        view.backgroundColor = .lightGray
         
         errorLabel.alpha = 0
         searchAgainButton.alpha = 0
@@ -124,7 +108,7 @@ class SearchViewController: UIViewController{
         view.addSubview(temperatureLabel)
         temperatureLabel.prepareLayout(.centerX)
         temperatureLabel.prepareLayout(.top,toItem: cityNameLabel,
-                                       toAttribute: .bottom,constant: 35)
+                                       toAttribute: .bottom,constant: 10)
         temperatureLabel.font = UIFont.systemFont(ofSize: 32, weight: .thin)
 
 
@@ -132,60 +116,60 @@ class SearchViewController: UIViewController{
         view.addSubview(descritionLabel)
         descritionLabel.prepareLayout(.centerX)
         descritionLabel.prepareLayout(.top,toItem: temperatureLabel,
-                                      toAttribute: .bottom,constant: 25)
+                                      toAttribute: .bottom,constant: 10)
         descritionLabel.prepareLayout(.leading,constant: 30)
         descritionLabel.prepareLayout(.trailing,constant: -30)
         descritionLabel.textAlignment = .center
-        descritionLabel.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+        descritionLabel.font = UIFont.systemFont(ofSize: 16, weight: .semibold)
 
         
         view.addSubview(highTempLabel)
         highTempLabel.prepareLayout(.top,toItem: descritionLabel,
-                                      toAttribute: .bottom,constant: 25)
-        highTempLabel.prepareLayout(.trailing,constant: -25)
-        highTempLabel.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+                                      toAttribute: .bottom,constant: 10)
+        highTempLabel.prepareLayout(.centerX)
+        highTempLabel.font = UIFont.systemFont(ofSize: 16, weight: .semibold)
 
 
         
         view.addSubview(lowTempLabel)
-        lowTempLabel.prepareLayout(.top,toItem: descritionLabel,
-                                      toAttribute: .bottom,constant: 25)
-        lowTempLabel.prepareLayout(.leading,constant: 25)
-        lowTempLabel.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+        lowTempLabel.prepareLayout(.top,toItem: highTempLabel,
+                                      toAttribute: .bottom,constant: 10)
+        lowTempLabel.prepareLayout(.centerX)
+        lowTempLabel.font = UIFont.systemFont(ofSize: 16, weight: .semibold)
 
 
 
         
         view.addSubview(cloudCoverLabel)
         cloudCoverLabel.prepareLayout(.top,toItem: lowTempLabel,
-                                      toAttribute: .bottom,constant: 25)
+                                      toAttribute: .bottom,constant: 10)
         cloudCoverLabel.prepareLayout(.centerX)
-        cloudCoverLabel.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+        cloudCoverLabel.font = UIFont.systemFont(ofSize: 16, weight: .semibold)
 
 
         
         view.addSubview(coordLabel)
         coordLabel.prepareLayout(.top,toItem: cloudCoverLabel,
-                                      toAttribute: .bottom,constant: 25)
+                                      toAttribute: .bottom,constant: 10)
         coordLabel.prepareLayout(.centerX)
         coordLabel.text = "Coordinates"
-        coordLabel.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+        coordLabel.font = UIFont.systemFont(ofSize: 16, weight: .semibold)
 
         
         view.addSubview(longLabel)
         longLabel.prepareLayout(.top,toItem: coordLabel,
-                                      toAttribute: .bottom,constant: 25)
-        longLabel.prepareLayout(.leading,constant: 225)
-        longLabel.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+                                      toAttribute: .bottom,constant: 10)
+        longLabel.prepareLayout(.centerX)
+        longLabel.font = UIFont.systemFont(ofSize: 16, weight: .semibold)
 
 
 
         
         view.addSubview(latLabel)
-        latLabel.prepareLayout(.top,toItem: coordLabel,
-                                      toAttribute: .bottom,constant: 25)
-        latLabel.prepareLayout(.leading,constant: 100)
-        latLabel.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+        latLabel.prepareLayout(.top,toItem: longLabel,
+                                      toAttribute: .bottom,constant: 10)
+        latLabel.prepareLayout(.centerX)
+        latLabel.font = UIFont.systemFont(ofSize: 16, weight: .semibold)
 
         
         view.addSubview(searchAgainButton)
@@ -194,7 +178,7 @@ class SearchViewController: UIViewController{
         searchAgainButton.prepareLayout(.leading,constant: 50)
         searchAgainButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
         
-        searchAgainButton.backgroundColor = .blue
+        searchAgainButton.backgroundColor = .black
             
         let attributedTitle = NSAttributedString(string: "Search", attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16), NSAttributedString.Key.foregroundColor: UIColor(red: 255/255, green: 255/255, blue: 255/255, alpha: 1)])
         searchAgainButton.setAttributedTitle(attributedTitle, for: .normal)
@@ -209,7 +193,7 @@ class SearchViewController: UIViewController{
         searchBar.prepareLayout(.trailing)
         
         searchBar.delegate = self
-        searchBar.placeholder = "Search"
+        searchBar.placeholder = "Search By city, zipcode"
 //        if let searchTextField = searchBar.value(forKey: "searchField")
 //            as? UITextField {
 //            let borderImage = UIImage() // Create an empty UIImage
@@ -217,6 +201,27 @@ class SearchViewController: UIViewController{
 //            searchTextField.background = borderImage // Set the background image to the empty UIImage
 //        }
         
+    }
+    
+    private func prepareLocation(){
+        
+        locationManager.delegate = self
+        locationManager.distanceFilter = 500
+        locationManager.desiredAccuracy = kCLLocationAccuracyKilometer
+        if let sharing = UserDefaults.standard.value(forKey: "sharingLocation") as? Bool {
+            hasAuthorized = sharing
+            if sharing {
+                if !hasStartedUpdatingLocation {
+                    locationManager.startUpdatingLocation()
+                    hasStartedUpdatingLocation = true
+                }
+            } else {
+                getLastSearchCity()
+            }
+        } else {
+          
+            locationManager.requestAlwaysAuthorization()
+        }
     }
     
     private func getLastSearchCity(){
@@ -329,11 +334,11 @@ extension SearchViewController: WeatherViewModelDelegate {
                 self.cityNameLabel.text = "City Name: \(newCityData.name.description)"
             self.temperatureLabel.text = "\(String(describing: self.kelvinToFahrenheit(kelvin: main.temp))) F"
             self.descritionLabel.text = weather[0].description
-            self.highTempLabel.text = "High Temperature:\(String(describing: self.kelvinToFahrenheit(kelvin: main.tempMax))) F"
-            self.lowTempLabel.text = "Low Temperature:\(String(describing: self.kelvinToFahrenheit(kelvin: main.tempMin))) F"
+            self.highTempLabel.text = "High Temperature: \(String(describing: self.kelvinToFahrenheit(kelvin: main.tempMax))) F"
+            self.lowTempLabel.text = "Low Temperature: \(String(describing: self.kelvinToFahrenheit(kelvin: main.tempMin))) F"
             self.cloudCoverLabel.text = "Cloud cover is \(String(describing: clouds.all))%"
-            self.longLabel.text = "Longitude:\(String(describing: coord.lon))"
-            self.latLabel.text = "Latitude:\(String(describing: coord.lat))"
+            self.longLabel.text = "Longitude :\(String(describing: coord.lon))"
+            self.latLabel.text = "Latitude :\(String(describing: coord.lat))"
 
         }
     }
@@ -369,11 +374,11 @@ extension SearchViewController: WeatherViewModelDelegate {
             }
             self.temperatureLabel.text = "\(String(describing: self.kelvinToFahrenheit(kelvin: main.temp))) F"
                 self.descritionLabel.text = weather[0].description
-                self.highTempLabel.text = "High Temperature:\(String(describing: self.kelvinToFahrenheit(kelvin: main.temp_max))) F"
-                self.lowTempLabel.text = "Low Temperature:\(String(describing: self.kelvinToFahrenheit(kelvin: main.temp_min))) F"
+                self.highTempLabel.text = "High Temperature: \(String(describing: self.kelvinToFahrenheit(kelvin: main.temp_max))) F"
+                self.lowTempLabel.text = "Low Temperature: \(String(describing: self.kelvinToFahrenheit(kelvin: main.temp_min))) F"
                 self.cloudCoverLabel.text = "Cloud cover is \(String(describing: clouds.all))%"
-                self.longLabel.text = "Longitude:\(String(describing: coord.lon))"
-                self.latLabel.text = "Latitude:\(String(describing: coord.lat))"
+                self.longLabel.text = "Longitude: \(String(describing: coord.lon))"
+                self.latLabel.text = "Latitude: \(String(describing: coord.lat))"
             }
         }
 
