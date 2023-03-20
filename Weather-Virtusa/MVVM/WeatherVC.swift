@@ -189,14 +189,14 @@ class SearchViewController: UIViewController{
 
         
         view.addSubview(searchAgainButton)
-        searchAgainButton.prepareLayout(.bottom,constant: -50)
+        searchAgainButton.prepareLayout(.bottom,constant: -8)
         searchAgainButton.prepareLayout(.trailing,constant: -50)
         searchAgainButton.prepareLayout(.leading,constant: 50)
         searchAgainButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
         
-        searchAgainButton.backgroundColor = UIColor.systemTeal.withAlphaComponent(0.5)
+        searchAgainButton.backgroundColor = .blue
             
-        let attributedTitle = NSAttributedString(string: "Search Again", attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16), NSAttributedString.Key.foregroundColor: UIColor(red: 255/255, green: 255/255, blue: 255/255, alpha: 1)])
+        let attributedTitle = NSAttributedString(string: "Search", attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16), NSAttributedString.Key.foregroundColor: UIColor(red: 255/255, green: 255/255, blue: 255/255, alpha: 1)])
         searchAgainButton.setAttributedTitle(attributedTitle, for: .normal)
         searchAgainButton.isEnabled = true
         searchAgainButton.addTarget(self, action: #selector(searchAgainButtonTapped), for: .touchUpInside)
@@ -257,12 +257,6 @@ class SearchViewController: UIViewController{
         viewModel?.fetchCurrentWeatherData(location.coordinate.longitude,
                                            location.coordinate.latitude)
     }
-    
-    
-
-    
-
-    
     
     // MARK: - Action
     
@@ -332,14 +326,14 @@ extension SearchViewController: WeatherViewModelDelegate {
             self.searchAgainButton.alpha = 1
             self.searchBar.alpha = 0
             self.changelabelsState(hide: false)
-            self.cityNameLabel.text = newCityData.name
+                self.cityNameLabel.text = "City Name: \(newCityData.name.description)"
             self.temperatureLabel.text = "\(String(describing: self.kelvinToFahrenheit(kelvin: main.temp))) F"
             self.descritionLabel.text = weather[0].description
-            self.highTempLabel.text = "H:\(String(describing: self.kelvinToFahrenheit(kelvin: main.tempMax)))"
-            self.lowTempLabel.text = "L:\(String(describing: self.kelvinToFahrenheit(kelvin: main.tempMin)))"
+            self.highTempLabel.text = "High Temperature:\(String(describing: self.kelvinToFahrenheit(kelvin: main.tempMax))) F"
+            self.lowTempLabel.text = "Low Temperature:\(String(describing: self.kelvinToFahrenheit(kelvin: main.tempMin))) F"
             self.cloudCoverLabel.text = "Cloud cover is \(String(describing: clouds.all))%"
-            self.longLabel.text = "Lon:\(String(describing: coord.lon))"
-            self.latLabel.text = "Lat:\(String(describing: coord.lat))"
+            self.longLabel.text = "Longitude:\(String(describing: coord.lon))"
+            self.latLabel.text = "Latitude:\(String(describing: coord.lat))"
 
         }
     }
@@ -370,14 +364,16 @@ extension SearchViewController: WeatherViewModelDelegate {
                 self.searchAgainButton.alpha = 1
                 self.searchBar.alpha = 0
                 self.changelabelsState(hide: false)
-                self.cityNameLabel.text = newCityData.name
-                self.temperatureLabel.text = "\(String(describing: self.kelvinToFahrenheit(kelvin: main.temp))) F"
+            if let name = newCityData.name {
+                self.cityNameLabel.text = "City Name: \(name)"
+            }
+            self.temperatureLabel.text = "\(String(describing: self.kelvinToFahrenheit(kelvin: main.temp))) F"
                 self.descritionLabel.text = weather[0].description
-                self.highTempLabel.text = "H:\(String(describing: self.kelvinToFahrenheit(kelvin: main.temp_max)))"
-                self.lowTempLabel.text = "L:\(String(describing: self.kelvinToFahrenheit(kelvin: main.temp_min)))"
+                self.highTempLabel.text = "High Temperature:\(String(describing: self.kelvinToFahrenheit(kelvin: main.temp_max))) F"
+                self.lowTempLabel.text = "Low Temperature:\(String(describing: self.kelvinToFahrenheit(kelvin: main.temp_min))) F"
                 self.cloudCoverLabel.text = "Cloud cover is \(String(describing: clouds.all))%"
-                self.longLabel.text = "Lon:\(String(describing: coord.lon))"
-                self.latLabel.text = "Lat:\(String(describing: coord.lat))"
+                self.longLabel.text = "Longitude:\(String(describing: coord.lon))"
+                self.latLabel.text = "Latitude:\(String(describing: coord.lat))"
             }
         }
 
@@ -405,7 +401,8 @@ extension SearchViewController: UISearchBarDelegate {
 // MARK: - CLLocationManagerDelegate
 extension SearchViewController: CLLocationManagerDelegate {
     
-    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+    func locationManager(_ manager: CLLocationManager,
+                         didChangeAuthorization status: CLAuthorizationStatus) {
         switch status {
         case .authorizedAlways, .authorizedWhenInUse:
             UserDefaults.standard.setValue(true, forKey: "sharingLocation")
@@ -436,21 +433,23 @@ extension SearchViewController: CLLocationManagerDelegate {
         }
     }
 
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        self.errorLabel.alpha = 1
+    func locationManager(_ manager: CLLocationManager,
+                         didFailWithError error: Error) {
+        
+        errorLabel.alpha = 1
         // Allow user to research in case there is an error
-        self.searchBar.alpha = 1
-        self.changelabelsState(hide: false)
+        searchBar.alpha = 1
+        changelabelsState(hide: false)
         
         if let clError = error as? CLError {
             switch clError.code {
             case .denied:
-                self.errorLabel.text = "Location access denied. Please allow location access in Settings."
+                errorLabel.text = "Location access denied. Please allow location access in Settings."
                 getDefaultWeather()
             case .network:
-                self.errorLabel.text = "Network error. Please check your internet connection."
+                errorLabel.text = "Network error. Please check your internet connection."
             default:
-                self.errorLabel.text = "Error determining location: \(error.localizedDescription)"
+                errorLabel.text = "Error determining location: \(error.localizedDescription)"
             }
         } else {
             self.errorLabel.text = "Error determining location: \(error.localizedDescription)"
