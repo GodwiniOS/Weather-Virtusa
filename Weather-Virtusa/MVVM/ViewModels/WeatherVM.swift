@@ -75,7 +75,7 @@ class WeatherViewModel {
                         let errorDetails = error.localizedDescription.description
                         self.delegate?.responseAPIRequest(error: errorDetails, deatails: nil,type: .DefaultWeather)
                     } else {
-                        self.delegate?.responseAPIRequest(error: nil, deatails: newCityData,type: .DefaultWeather)
+                        self.delegate?.responseAPIRequest(error: nil, deatails: cityData,type: .DefaultWeather)
                     }
                 }
             }
