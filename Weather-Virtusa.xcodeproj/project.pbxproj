@@ -21,7 +21,7 @@
 		5A97B99129C86E7800623F27 /* ResponseModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A97B99029C86E7800623F27 /* ResponseModels.swift */; };
 		5A97B99329C86F0600623F27 /* WeatherModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A97B99229C86F0600623F27 /* WeatherModels.swift */; };
 		5A97B99529C86F8200623F27 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A97B99429C86F8200623F27 /* LocationManager.swift */; };
-		5A97B99729C884CB00623F27 /* Label.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A97B99629C884CB00623F27 /* Label.swift */; };
+		5A97B99729C884CB00623F27 /* ExView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A97B99629C884CB00623F27 /* ExView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -60,7 +60,7 @@
 		5A97B99029C86E7800623F27 /* ResponseModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResponseModels.swift; sourceTree = "<group>"; };
 		5A97B99229C86F0600623F27 /* WeatherModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherModels.swift; sourceTree = "<group>"; };
 		5A97B99429C86F8200623F27 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
-		5A97B99629C884CB00623F27 /* Label.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Label.swift; sourceTree = "<group>"; };
+		5A97B99629C884CB00623F27 /* ExView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -179,7 +179,7 @@
 		5A97B98A29C86BC600623F27 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				5A97B99629C884CB00623F27 /* Label.swift */,
+				5A97B99629C884CB00623F27 /* ExView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -329,7 +329,7 @@
 				5A97B98D29C86DCD00623F27 /* WeatherVM.swift in Sources */,
 				5A97B98F29C86E3300623F27 /* APIManager.swift in Sources */,
 				5A97B99529C86F8200623F27 /* LocationManager.swift in Sources */,
-				5A97B99729C884CB00623F27 /* Label.swift in Sources */,
+				5A97B99729C884CB00623F27 /* ExView.swift in Sources */,
 				5A97B99129C86E7800623F27 /* ResponseModels.swift in Sources */,
 				5A97B95729C8667700623F27 /* AppDelegate.swift in Sources */,
 				5A97B95929C8667700623F27 /* SceneDelegate.swift in Sources */,

@@ -16,92 +16,148 @@ class SearchViewController: UIViewController {
     var hasAuthorized:Bool?
     var hasStartedUpdatingLocation = false
     
+    // MARK: - UI Components
+    let cityNameLabel = UILabel()
+    let temperatureLabel = UILabel()
+    let descritionLabel = UILabel()
+    let highTempLabel = UILabel()
+    let lowTempLabel = UILabel()
+    let cloudCoverLabel = UILabel()
+    let coordLabel = UILabel()
+    let longLabel = UILabel()
+    var latLabel = UILabel()
+
+
+
     // MARK: - Initialization
     init(_ vm: SearchViewModel) {
         super.init(nibName: nil, bundle: nil)
-        self.viewModel = vm
-        self.initializeUI()
+        viewModel = vm
+        initializeUI()
         
     }
     
     func initializeUI() {
-        self.view.backgroundColor = .white
-        self.setupSearchBar()
-        self.view.addSubview(spinnerView)
-        self.view.addSubview(errorLabel)
-        self.view.addSubview(cityNameLabel)
-        self.view.addSubview(temperatureLabel)
-        self.view.addSubview(descritionLabel)
-        self.view.addSubview(highTempLabel)
-        self.view.addSubview(lowTempLabel)
-        self.view.addSubview(cloudCoverLabel)
-        self.view.addSubview(coordLabel)
-        self.view.addSubview(longLabel)
-        self.view.addSubview(latLabel)
-        self.view.addSubview(searchAgainButton)
-        self.spinnerView.addSubview(spinnerViewLabel)
-        self.errorLabel.alpha = 0
-        self.searchAgainButton.alpha = 0
-        self.errorLabel.text = ""
-        self.hideLabels()
-        
-        errorLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        errorLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
-        errorLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 30).isActive = true
-        errorLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -30).isActive = true
-        
-        spinnerView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        spinnerView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
-        spinnerView.heightAnchor.constraint(equalToConstant: 100.0).isActive = true
-        spinnerView.widthAnchor.constraint(equalToConstant: 100.0).isActive = true
-        
-        
-        cityNameLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        cityNameLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 55).isActive = true
-        
-        temperatureLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        temperatureLabel.topAnchor.constraint(equalTo: cityNameLabel.bottomAnchor, constant: 35).isActive = true
-        
-        descritionLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        descritionLabel.topAnchor.constraint(equalTo: temperatureLabel.bottomAnchor, constant: 25).isActive = true
-        descritionLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 30).isActive = true
-        descritionLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -30).isActive = true
-        
-        highTempLabel.topAnchor.constraint(equalTo: descritionLabel.bottomAnchor, constant: 25).isActive = true
-        highTempLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 225).isActive = true
-        
-        lowTempLabel.topAnchor.constraint(equalTo: descritionLabel.bottomAnchor, constant: 25).isActive = true
-        lowTempLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 125).isActive = true
-        
-        cloudCoverLabel.topAnchor.constraint(equalTo: lowTempLabel.bottomAnchor, constant: 25).isActive = true
-        cloudCoverLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        
-        coordLabel.topAnchor.constraint(equalTo: cloudCoverLabel.bottomAnchor, constant: 25).isActive = true
-        coordLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        view.backgroundColor = .white
+        setupSearchBar()
 
-        longLabel.topAnchor.constraint(equalTo: coordLabel.bottomAnchor, constant: 25).isActive = true
-        longLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 225).isActive = true
+        errorLabel.alpha = 0
+        searchAgainButton.alpha = 0
+        errorLabel.text = ""
+        changelabelsState(hide: true)
         
-        latLabel.topAnchor.constraint(equalTo: coordLabel.bottomAnchor, constant: 25).isActive = true
-        latLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 100).isActive = true
         
-        searchAgainButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        searchAgainButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -30).isActive = true
-        searchAgainButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -50).isActive = true
-        searchAgainButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 50).isActive = true
+        view.addSubview(errorLabel)
+        errorLabel.prepareLayout(.centerX)
+        errorLabel.prepareLayout(.centerY)
+        errorLabel.prepareLayout(.leading,constant: 30)
+        errorLabel.prepareLayout(.trailing,constant: -30)
+
+        
+        
+
+
+        view.addSubview(spinnerView)
+        spinnerView.addSubview(spinnerViewLabel)
+        spinnerView.prepareLayout(.centerX)
+        spinnerView.prepareLayout(.centerY)
+        spinnerView.prepareLayout(.height,constant: 100)
+        spinnerView.prepareLayout(.width,constant: 100)
+
+        
+        view.addSubview(cityNameLabel)
+        cityNameLabel.prepareLayout(.centerX)
+        cityNameLabel.prepareLayout(.top,constant: 55)
+        cityNameLabel.font = UIFont.systemFont(ofSize: 28, weight: .semibold)
+
+
+
+        
+        view.addSubview(temperatureLabel)
+        temperatureLabel.prepareLayout(.centerX)
+        temperatureLabel.prepareLayout(.top,toItem: cityNameLabel,
+                                       toAttribute: .bottom,constant: 35)
+        temperatureLabel.font = UIFont.systemFont(ofSize: 32, weight: .thin)
+
+
+        
+        view.addSubview(descritionLabel)
+        descritionLabel.prepareLayout(.centerX)
+        descritionLabel.prepareLayout(.top,toItem: temperatureLabel,
+                                      toAttribute: .bottom,constant: 25)
+        descritionLabel.prepareLayout(.leading,constant: 30)
+        descritionLabel.prepareLayout(.trailing,constant: -30)
+        descritionLabel.textAlignment = .center
+        descritionLabel.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+
+        
+        view.addSubview(highTempLabel)
+        highTempLabel.prepareLayout(.top,toItem: descritionLabel,
+                                      toAttribute: .bottom,constant: 25)
+        highTempLabel.prepareLayout(.trailing,constant: -25)
+        highTempLabel.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+
+
+        
+        view.addSubview(lowTempLabel)
+        lowTempLabel.prepareLayout(.top,toItem: descritionLabel,
+                                      toAttribute: .bottom,constant: 25)
+        lowTempLabel.prepareLayout(.leading,constant: 25)
+        lowTempLabel.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+
+
+
+        
+        view.addSubview(cloudCoverLabel)
+        cloudCoverLabel.prepareLayout(.top,toItem: lowTempLabel,
+                                      toAttribute: .bottom,constant: 25)
+        cloudCoverLabel.prepareLayout(.centerX)
+        cloudCoverLabel.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+
+
+        
+        view.addSubview(coordLabel)
+        coordLabel.prepareLayout(.top,toItem: cloudCoverLabel,
+                                      toAttribute: .bottom,constant: 25)
+        coordLabel.prepareLayout(.centerX)
+        coordLabel.text = "Coordinates"
+        coordLabel.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+
+        
+        view.addSubview(longLabel)
+        longLabel.prepareLayout(.top,toItem: coordLabel,
+                                      toAttribute: .bottom,constant: 25)
+        longLabel.prepareLayout(.leading,constant: 225)
+        longLabel.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+
+
+
+        
+        view.addSubview(latLabel)
+        latLabel.prepareLayout(.top,toItem: coordLabel,
+                                      toAttribute: .bottom,constant: 25)
+        latLabel.prepareLayout(.leading,constant: 100)
+        latLabel.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+
+        
+        view.addSubview(searchAgainButton)
+        searchAgainButton.prepareLayout(.bottom,constant: -50)
+        searchAgainButton.prepareLayout(.trailing,constant: -50)
+        searchAgainButton.prepareLayout(.leading,constant: 50)
         searchAgainButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        
     }
     
     private func setupSearchBar() {
        searchBar.delegate = self // Set the delegate for the search bar
        
-       self.view.addSubview(searchBar) // Add the search bar to the view hierarchy
+       view.addSubview(searchBar) // Add the search bar to the view hierarchy
        
        // Set up Auto Layout constraints
        NSLayoutConstraint.activate([
-           searchBar.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor),
-           searchBar.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor),
-           searchBar.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor)
+           searchBar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+           searchBar.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+           searchBar.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor)
        ])
    }
     
@@ -117,14 +173,14 @@ class SearchViewController: UIViewController {
         locationManager.distanceFilter = 500
         locationManager.desiredAccuracy = kCLLocationAccuracyKilometer
         if let sharing = UserDefaults.standard.value(forKey: "sharingLocation") as? Bool {
-            self.hasAuthorized = sharing
+            hasAuthorized = sharing
             if sharing {
                 if !hasStartedUpdatingLocation {
                     locationManager.startUpdatingLocation()
                     hasStartedUpdatingLocation = true
                 }
             } else {
-                self.fetchLastSearchCity()
+                fetchLastSearchCity()
             }
         } else {
           
@@ -133,71 +189,7 @@ class SearchViewController: UIViewController {
     }
 
     
-    // MARK: - UI Components
-    var cityNameLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = UIFont.systemFont(ofSize: 28, weight: .semibold)
-        return label
-    }()
-    
-    var temperatureLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = UIFont.systemFont(ofSize: 32, weight: .thin)
-        return label
-    }()
-    
-    var descritionLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.textAlignment = .center
-        label.font = UIFont.systemFont(ofSize: 16, weight: .medium)
-        return label
-    }()
-    
-    var highTempLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = UIFont.systemFont(ofSize: 16, weight: .medium)
-        return label
-    }()
-    
-    var lowTempLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = UIFont.systemFont(ofSize: 16, weight: .medium)
-        return label
-    }()
-    
-    var cloudCoverLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = UIFont.systemFont(ofSize: 16, weight: .medium)
-        return label
-    }()
-    
-    var coordLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Coordinates"
-        label.font = UIFont.systemFont(ofSize: 16, weight: .medium)
-        return label
-    }()
-    
-    var longLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = UIFont.systemFont(ofSize: 16, weight: .medium)
-        return label
-    }()
-    
-    var latLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = UIFont.systemFont(ofSize: 16, weight: .medium)
-        return label
-    }()
+
     
     var searchBar: UISearchBar = {
         let searchBar = UISearchBar()
@@ -241,10 +233,11 @@ class SearchViewController: UIViewController {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.backgroundColor = UIColor.systemTeal.withAlphaComponent(0.5)
-        let attributedTitle = NSAttributedString(string: "Search Again", attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16), NSAttributedString.Key.foregroundColor: UIColor(red: 255, green: 255, blue: 255, alpha: 100)])
+        let attributedTitle = NSAttributedString(string: "Search Again", attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16), NSAttributedString.Key.foregroundColor: UIColor(red: 255/255, green: 255/255, blue: 255/255, alpha: 1)])
         button.setAttributedTitle(attributedTitle, for: .normal)
+//        button.setTitle("Search Again", for: .normal)
         button.isEnabled = true
-        button.addTarget(SearchViewController.self, action: #selector(searchAgainButtonTapped), for: .touchUpInside)
+        button.addTarget(self, action: #selector(searchAgainButtonTapped), for: .touchUpInside)
         return button
     }()
     
@@ -252,14 +245,14 @@ class SearchViewController: UIViewController {
     
     @objc private func searchButtonTapped() {
         searchBar.resignFirstResponder() // Dismiss the keyboard
-        self.fetchWeatherData()
+        fetchWeatherData()
     }
     
     @objc private func searchAgainButtonTapped() {
         searchBar.resignFirstResponder() // Dismiss the keyboard
-        self.searchBar.alpha = 1
-        self.searchAgainButton.alpha = 0
-        self.hideLabels()
+        searchBar.alpha = 1
+        searchAgainButton.alpha = 0
+        changelabelsState(hide: true)
     }
     
     // MARK: - Business Logic
@@ -269,36 +262,27 @@ class SearchViewController: UIViewController {
         return (fahrenheit * 100).rounded() / 100
     }
     
-    func showLabels() {
-        self.cityNameLabel.alpha = 1
-        self.temperatureLabel.alpha = 1
-        self.descritionLabel.alpha = 1
-        self.highTempLabel.alpha = 1
-        self.lowTempLabel.alpha = 1
-        self.cloudCoverLabel.alpha = 1
-        self.coordLabel.alpha = 1
-        self.longLabel.alpha = 1
-        self.latLabel.alpha = 1
-    }
+
     
-    func hideLabels() {
-        self.cityNameLabel.alpha = 0
-        self.temperatureLabel.alpha = 0
-        self.descritionLabel.alpha = 0
-        self.highTempLabel.alpha = 0
-        self.lowTempLabel.alpha = 0
-        self.cloudCoverLabel.alpha = 0
-        self.coordLabel.alpha = 0
-        self.longLabel.alpha = 0
-        self.latLabel.alpha = 0
+    func changelabelsState(hide: Bool) {
+        
+        cityNameLabel.alpha = hide ? 0 : 1
+        temperatureLabel.alpha = hide ? 0 : 1
+        descritionLabel.alpha = hide ? 0 : 1
+        highTempLabel.alpha = hide ? 0 : 1
+        lowTempLabel.alpha = hide ? 0 : 1
+        cloudCoverLabel.alpha = hide ? 0 : 1
+        coordLabel.alpha = hide ? 0 : 1
+        longLabel.alpha = hide ? 0 : 1
+        latLabel.alpha = hide ? 0 : 1
     }
     
     func fetchLastSearchCity() {
-        if let vm = self.viewModel, let manager = vm.weatherManager, let currCitySaved = manager.lastSearchCity {
+        if let vm = viewModel, let manager = vm.weatherManager, let currCitySaved = manager.lastSearchCity {
             if currCitySaved != "" {
-                self.errorLabel.alpha = 0
+                errorLabel.alpha = 0
                 
-                self.spinnerView.startAnimating()
+                spinnerView.startAnimating()
                 vm.handleFetchWeatherLastCity { cityData, error  in
                     if let error = error {
                         // Change label in the main thread
@@ -316,7 +300,7 @@ class SearchViewController: UIViewController {
                                 self.spinnerView.stopAnimating()
                                 self.searchAgainButton.alpha = 1
                                 self.searchBar.alpha = 0
-                                self.showLabels()
+                                self.changelabelsState(hide: false)
                                 self.cityNameLabel.text = newCityData.name
                                 self.temperatureLabel.text = "\(String(describing: self.kelvinToFahrenheit(kelvin: main.temp))) F"
                                 self.descritionLabel.text = weather[0].description
@@ -360,7 +344,7 @@ class SearchViewController: UIViewController {
                                 self.spinnerView.stopAnimating()
                                 self.searchAgainButton.alpha = 1
                                 self.searchBar.alpha = 0
-                                self.showLabels()
+                                self.changelabelsState(hide: false)
                                 self.cityNameLabel.text = newCityData.name
                                 self.temperatureLabel.text = "\(String(describing: self.kelvinToFahrenheit(kelvin: main.temp))) F"
                                 self.descritionLabel.text = weather[0].description
@@ -403,7 +387,7 @@ class SearchViewController: UIViewController {
                             self.spinnerView.stopAnimating()
                             self.searchAgainButton.alpha = 1
                             self.searchBar.alpha = 0
-                            self.showLabels()
+                            self.changelabelsState(hide: false)
                             self.cityNameLabel.text = newCityData.name
                             self.temperatureLabel.text = "\(String(describing: self.kelvinToFahrenheit(kelvin: main.temp))) F"
                             self.descritionLabel.text = weather[0].description
@@ -443,7 +427,7 @@ class SearchViewController: UIViewController {
                                 self.spinnerView.stopAnimating()
                                 self.searchAgainButton.alpha = 1
                                 self.searchBar.alpha = 0
-                                self.showLabels()
+                                self.changelabelsState(hide: false)
                                 self.cityNameLabel.text = newCityData.name
                                 self.temperatureLabel.text = "\(String(describing: self.kelvinToFahrenheit(kelvin: main.temp))) F"
                                 self.descritionLabel.text = weather[0].description
@@ -509,7 +493,7 @@ extension SearchViewController: CLLocationManagerDelegate {
         self.errorLabel.alpha = 1
         // Allow user to research in case there is an error
         self.searchBar.alpha = 1
-        self.hideLabels()
+        self.changelabelsState(hide: false)
         
         if let clError = error as? CLError {
             switch clError.code {
@@ -525,6 +509,4 @@ extension SearchViewController: CLLocationManagerDelegate {
             self.errorLabel.text = "Error determining location: \(error.localizedDescription)"
         }
     }
-
-
 }
