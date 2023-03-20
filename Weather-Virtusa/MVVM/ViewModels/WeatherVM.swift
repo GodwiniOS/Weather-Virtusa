@@ -7,63 +7,115 @@
 
 import Foundation
 
-class SearchViewModel {
+
+protocol WeatherViewModelDelegate:AnyObject{
     
-    let weatherManager:WeatherManager?
+    func responseAPIRequest(error: String?,deatails: WeatherResponse?,
+                            type: WeatherViewModel.APIRequestType)
+    func responseCurrentWeatherData(error: String?,
+                                    deatails: WeatherCoodResponse?)
+
+}
+
+class WeatherViewModel {
     
-    init() {
-        weatherManager = WeatherManager.shared
+    enum APIRequestType {
+        case DefaultWeather
+        case LastSearchCity
+        case WeatherData
     }
     
+    let interactor = APIInteractor()
+    weak var delegate: WeatherViewModelDelegate?
     
-    // MARK: - Handle Current Location
-    func handleFetchWeatherInCurrentLocation(_ long:Double, _ lat:Double ,completion: @escaping (WeatherCoodResponse?, Error?) -> Void){
-        if let manager = self.weatherManager {
-            manager.fetchWeatherData(latitude: lat, longitude: long) { result in
-            switch result {
-            case .success(let weatherData):
-                completion(weatherData, nil)
-            case .failure(let error):
-                completion(nil, error)
-             }
-          }
-       }
-    }
-    
-    // MARK: - Handle fetch last city
-    func handleFetchWeatherLastCity(completion: @escaping (WeatherResponse?, Error?) -> Void) {
-        if let manager = self.weatherManager, let city = manager.lastSearchCity {
-            manager.fetchWeatherData(forCity: city) { result in
-                switch result {
-                case .success(let data):
-                    // Handle the weather data
-                    completion(data, nil)
-                case .failure(let error):
-                    // Handle the error
-                    completion(nil, error)
-                }
-            }
-        }
-    }
-    
-    // MARK: - Handle fetch call
-    func handleFetchWeatherByCity(_ city: String, completion: @escaping (WeatherResponse?, Error?) -> Void) {
-        if let manager = self.weatherManager {
-            manager.fetchWeatherData(forCity: city) { result in
-                switch result {
-                case .success(let data):
-                    // Handle the weather data
-                    if let searchCity = data.name {
-                        // Store searchCity in UserDefaults
-                        manager.setLastSearchCity(searchCity)
+    func fetchLastSearchCity() {
+        
+        if let manager = interactor.weatherManager,
+            let currCitySaved = manager.lastSearchCity {
+            if currCitySaved != "" {
+//                errorLabel.alpha = 0
+//                spinnerView.startAnimating()
+                interactor.handleFetchWeatherLastCity { cityData, error  in
+                    if let error = error {
+//
+                        // Change label in the main thread
+//                        DispatchQueue.main.async {
+//                            self.spinnerView.stopAnimating()
+//                            self.errorLabel.alpha = 1
+//                            self.searchBar.alpha = 1
+//                            self.searchAgainButton.alpha = 1
+//                            self.errorLabel.text =
+                            
+                            let errorDetil = error.localizedDescription.description
+                        self.delegate?.responseAPIRequest(error: errorDetil, deatails: nil,type: .LastSearchCity)
+                    } else {
+                        self.delegate?.responseAPIRequest(error: nil, deatails: cityData,type: .LastSearchCity)
+
                     }
-                    completion(data, nil)
-                case .failure(let error):
-                    // Handle the error
-                    completion(nil, error)
                 }
             }
         }
     }
     
+    func fetchDefaultWeather() {
+        
+        let defaultCity = "Miami"
+        if let manager = interactor.weatherManager,
+           let currCitySaved = manager.lastSearchCity {
+            // if currCitySaved != "" -> this is the first time load with denied
+            // if currCitySaved != "" && currCitySaved == defaultCity -> User already searched
+            // a city but denied sharing location with us
+            if currCitySaved == "" || (currCitySaved != "" && currCitySaved == defaultCity) {
+//                self.errorLabel.alpha = 0
+//                self.searchAgainButton.alpha = 1
+//                self.spinnerView.startAnimating()
+                interactor.handleFetchWeatherByCity(defaultCity) { cityData, error  in
+                    if let error = error {
+                        // Change label in the main thread
+                        let errorDetails = error.localizedDescription.description
+                        self.delegate?.responseAPIRequest(error: errorDetails, deatails: nil,type: .DefaultWeather)
+                    } else {
+                        self.delegate?.responseAPIRequest(error: nil, deatails: newCityData,type: .DefaultWeather)
+                    }
+                }
+            }
+        }
+    }
+    
+    func fetchCurrentWeatherData(_ long: Double, _ lat: Double) {
+        
+//        if let vm = self.viewModel {
+//            self.errorLabel.alpha = 0
+//            self.searchAgainButton.alpha = 1
+//            self.spinnerView.startAnimating()
+            interactor.handleFetchWeatherInCurrentLocation(long, lat) { cityData, error  in
+
+                if let error = error {
+                    let errorDetails = error.localizedDescription.description
+                    self.delegate?.responseCurrentWeatherData(error: errorDetails, deatails: nil)
+                } else {
+                    self.delegate?.responseCurrentWeatherData(error: nil, deatails: cityData)
+
+                }
+            }
+    }
+
+    
+    func fetchWeatherData(searchText: String) {
+
+        if searchText != "" {
+//                self.errorLabel.alpha = 0
+//                self.searchAgainButton.alpha = 1
+//                self.spinnerView.startAnimating()
+                interactor.handleFetchWeatherByCity(searchText) { cityData, error  in
+                    if let error = error {
+                       let errorDetails = error.localizedDescription.description
+                        self.delegate?.responseAPIRequest(error: errorDetails, deatails: nil,type: .WeatherData)
+
+                    } else {
+                        self.delegate?.responseAPIRequest(error: nil, deatails: cityData,type: .WeatherData)
+                    }
+                }
+            }
+    }
 }
